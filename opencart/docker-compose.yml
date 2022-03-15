@@ -1,0 +1,40 @@
+version: '3'
+services:
+    opencart-web:
+        #image: oberd/php-8.0-apache:latest
+        build:
+          context: .
+        container_name: opencart-web
+        restart: always
+        environment:
+          - WEB_ALIAS_DOMAIN=local.opencart.com
+          - WEB_DOCUMENT_ROOT=/var/www/html
+          - PHP_DATE_TIMEZONE=EST
+          - PHP_DISPLAY_ERRORS=1
+          - PHP_MEMORY_LIMIT=-1
+          - PHP_MAX_EXECUTION_TIME=300
+          - PHP_POST_MAX_SIZE=500M
+          - PHP_UPLOAD_MAX_FILESIZE=1024M
+        volumes:
+          - /Users/blowhorn/work/workspaces/opencart/upload:/var/www/html
+        ports:
+          - "80:80"
+          - "443:443"
+        links:
+          - opencart-mysql
+    opencart-mysql:
+        image: mariadb:10.4
+        container_name: opencart-mysql
+        restart: always
+        ports:
+          - "3306:3306"
+        environment:
+          - MYSQL_USER=opencart
+          - MYSQL_PASSWORD=opencart
+          - MYSQL_ROOT_PASSWORD=root
+          - MYSQL_DATABASE=opencart
+        volumes:
+          - db-data:/var/lib/mysql
+volumes:
+    db-data:
+        external: false
